@@ -16,8 +16,8 @@ module.exports = {
   networks: {
     myblockchain: {
       host: "127.0.0.1",
-      port: 9545,
+      port: 7545,
       network_id: "*"
-    }
+    },
   }
 };

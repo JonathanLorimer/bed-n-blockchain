@@ -1,30 +1,28 @@
 pragma solidity ^0.4.24;
 
-import "./HelloWorld.sol";
+import "../node_modules/zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
-contract Property is HelloWorld {
-    address guest;
-    bool occupied;
-
-    function inviteGuest(address _guest) external onlyOwner returns (address) {
-        guest = _guest;
-        return _guest;
+contract Property is ERC721Token {
+    
+    constructor(string _name, string _symbol) public ERC721Token(_name, _symbol) {
+    
     }
 
-    modifier onlyGuest {
-        require(msg.sender == guest);
+    modifier onlyOwner(uint256 _tokenId) {
+        require(tokenOwner[_tokenId] == msg.sender, "Non-owner is trying to access owner only function");
         _;
     }
 
-    function reserveRoom() external payable onlyGuest returns (bool) {
-        require(msg.value == 1 ether && !occupied, "Not enough funds were sent, please call the contract with 1 Ether");
-        occupied = true;
-        return true;
+    function createProperty() external {
+        _mint(msg.sender, allTokens.length + 1);
     }
-}
 
-// Owner should be able to set guest
-// Non-owner should not be able to set guest
-// Guest should be able to reserve room
-// Non-guest should not be able to reserve room
-// Second guest should not be able to reserve room if it is occupied
+    function setURI(uint256 _tokenId, string _uri) external onlyOwner(_tokenId) {
+        _setTokenURI(_tokenId, _uri);
+    }
+
+    function getURI(uint256 _tokenId) external view returns(string) {
+        return tokenURIs[_tokenId];
+    }
+
+}
