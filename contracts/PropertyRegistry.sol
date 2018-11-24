@@ -19,6 +19,12 @@ contract PropertyRegistry {
         string uri;
     }
 
+    event Registered(uint256 _tokenId);
+    event Approved(uint256 _tokenId);
+    event Requested(uint256 _tokenId);
+    event CheckIn(uint256 _tokenId);
+    event CheckOut(uint256 _tokenId);
+
     mapping(uint256 => Data) propertyDetails;
 
     modifier onlyOwner(uint256 _tokenId) {
@@ -45,16 +51,19 @@ contract PropertyRegistry {
 
     function registerProperty(uint256 _tokenId, uint256 _price, string _uri) public onlyOwner(_tokenId){
         propertyDetails[_tokenId] = Data(0, _price, address(0), address(0), address(0), 0, 0, _uri);
+        emit Registered(_tokenId);
     }
 
     function requestStay(uint256 _tokenId, uint256 _checkIn, uint256 _checkOut) public notRequested(_tokenId){
         propertyDetails[_tokenId].requested = msg.sender;
         propertyDetails[_tokenId].checkIn = _checkIn;
         propertyDetails[_tokenId].checkOut = _checkOut;
+        emit Requested(_tokenId);
     }
 
     function approveRequest(uint256 _tokenId) public onlyOwner(_tokenId) {
         propertyDetails[_tokenId].approved = propertyDetails[_tokenId].requested;
+        emit Approved(_tokenId);
     }
 
     function checkIn(uint256 _tokenId) public {
@@ -62,6 +71,7 @@ contract PropertyRegistry {
         require(now > propertyDetails[_tokenId].checkIn, "Check in time must be prior to now");
         require(propertyToken.transferFrom(msg.sender, address(this), propertyDetails[_tokenId].price), "Must succesfully pay for room");
         propertyDetails[_tokenId].occupant = propertyDetails[_tokenId].approved;
+        emit CheckIn(_tokenId);
     }
 
     function checkOut(uint _tokenId) public {
@@ -72,16 +82,23 @@ contract PropertyRegistry {
         );
         propertyDetails[_tokenId].requested = address(0);
         propertyDetails[_tokenId].stays++;
+        emit CheckOut(_tokenId);
     }
 
-    // =============================
-    // View functions for Owner
-    // =============================
-
-    function ownerGetStays(uint256 _tokenId) public view onlyOwner(_tokenId) returns (uint256){
-        return propertyDetails[_tokenId].stays;
+    function getPropertyData(uint256 _tokenId) external view 
+    returns (
+        uint256 stays,
+        uint256 price,
+        string uri
+    ) {
+        return (
+            propertyDetails[_tokenId].stays,
+            propertyDetails[_tokenId].price,
+            propertyDetails[_tokenId].uri
+        );
     }
-    function ownerGetBookingDetails(uint256 _tokenId) public view onlyOwner(_tokenId) 
+
+    function getStayData(uint256 _tokenId) external view 
     returns (
         address,
         address,
@@ -97,4 +114,13 @@ contract PropertyRegistry {
             propertyDetails[_tokenId].checkOut
         );
     }
+
+    // =============================
+    // View functions for Owner
+    // =============================
+
+    function ownerGetStays(uint256 _tokenId) external view onlyOwner(_tokenId) returns (uint256){
+        return propertyDetails[_tokenId].stays;
+    }
+
 }

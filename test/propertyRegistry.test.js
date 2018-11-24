@@ -129,7 +129,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 		}
 		assert(true, 'Bob was able to request stay')
 
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[0] === bob, 'Bob should have requested stay')
 		assert(propertyDetails[1] === zeroAddress, 'Bob should not be approved')
 		assert(propertyDetails[2] === zeroAddress, 'Bob should not be the occupant')
@@ -169,7 +169,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 		} catch(e) {
 			assert(true, 'Alice could not approve Bob\'s request')
 		}
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[1] === bob, 'Bob should be approved')
 	})
 
@@ -194,7 +194,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 			console.log(e)
 			assert(false, 'Bob could not check in even though he was approved')
 		}
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[2] === bob, 'Bob could check in')
 	})
 
@@ -216,7 +216,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 		} catch(e) {
 			assert(false, 'Bob could not check out even though he was approved')
 		}
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[0] === zeroAddress, 'Bob could check out')
 	})
 
@@ -241,7 +241,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 		}
 		assert(true, 'Bob was able to request stay')
 
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[0] === frank, 'Frank should have requested stay')
 		assert(propertyDetails[1] === bob, 'Bob should be the approved since he was last guest')
 		assert(propertyDetails[2] === bob, 'Bob should be the occupant since he was last guest')
@@ -257,7 +257,7 @@ contract('PropertyRegistry Contract Tests', accounts => {
 		} catch(e) {
 			assert(true, 'Frank could not submit request after bob')
 		}
-		let propertyDetails = await propertyRegistry.ownerGetBookingDetails(aliceToken, {from: alice})
+		let propertyDetails = await propertyRegistry.getStayData(aliceToken, {from: alice})
 		assert(propertyDetails[1] === frank, 'Bob should not be approved')
 	})
 

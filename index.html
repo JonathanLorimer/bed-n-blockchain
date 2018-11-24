@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Crypto BnB</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="./src/main.css" />
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@v0.20.6/dist/web3.js"></script>
+</head>
+<body>
+    <button id="propertyButton">Create A Property</button>
+</body>
+<script src="/node_modules/truffle-contract/dist/truffle-contract.js"></script>
+<script src="./src/main.js"></script>
+<script>
+    let web3Provider;
+    if (typeof web3 !== 'undefined') {
+        // this will work if a web3 instance has been injected
+        // such is the case with Metamask
+        web3Provider = web3.currentProvider;
+    }
+    else {
+        // but for our purpose we'll connect to truffle
+        web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545/');
+    }
+    window.web3 = new Web3(web3Provider);
+
+    async function PropertyInit() {
+
+        async function getContract(json, web3 = window.web3) {
+            const contract = TruffleContract(json);
+            contract.setProvider(web3.currentProvider);
+            return contract.deployed();
+        }
+
+        const json = await fetch('../build/contracts/Property.json').then((res) => res.json());
+        console.log(json)
+        propertyContract = await getContract(json);
+
+        const event = propertyContract.allEvents({ fromBlock: 0, toBlock: 'latest' });
+        event.watch((err, res) => {
+        if (err) 
+            console.log('watch error', err)
+        else 
+            console.log('got an event', res)
+        });
+
+    }
+
+    PropertyInit().then(_ => {
+        const { accounts } = window.web3.eth;
+        const alice = accounts[0];
+        const bob = accounts[1];
+        console.log(propertyContract.address)
+        console.log(alice)
+
+        document.querySelector('#propertyButton').onclick = async () => {
+            try {
+                const tx = await propertyContract.createProperty({
+                from: alice,
+                gas: 250000
+                });
+                console.log(tx);
+                console.log('Property Created for Alice');
+            } catch(e) {
+                console.log(e);
+                alert('Error creating property', e)
+            }
+        }
+    })
+</script>
+</html>

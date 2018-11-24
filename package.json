@@ -1,0 +1,29 @@
+{
+  "name": "bnb",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^4.16.4",
+    "truffle-contract": "^3.0.6",
+    "zeppelin-solidity": "^1.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JonathanLorimer/bed-n-blockchain.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JonathanLorimer/bed-n-blockchain/issues"
+  },
+  "homepage": "https://github.com/JonathanLorimer/bed-n-blockchain#readme"
+}
